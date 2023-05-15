@@ -1,0 +1,2 @@
+# GameNetworkingSocketsBuild
+Build automation scripts for GameNetworkingSockets
