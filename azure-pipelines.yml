@@ -1,0 +1,72 @@
+trigger:
+  branches:
+    include:
+    - main
+
+jobs:
+- job: build_windows_x64_static_libsodium
+  pool:
+    vmImage: 'windows-2022'
+
+  steps:
+  - task: CmdLine@2
+    displayName: "Create directory structure"
+    inputs:
+      script: |
+        mkdir Source
+        mkdir Build
+      workingDirectory: $(Agent.BuildDirectory)
+      failOnStderr: true
+
+  - task: CmdLine@2
+    displayName: "Shallow clone GNS"
+    inputs:
+      script: |
+        git init
+        git remote add origin https://github.com/ValveSoftware/GameNetworkingSockets.git
+        git fetch --depth 1 origin e0d33386903202d9af61e76d69c54e46ece2f457
+        git config --local advice.detachedHead false
+        git checkout FETCH_HEAD
+        git submodule update --init --depth 1
+      workingDirectory: $(Agent.BuildDirectory)\Source
+      failOnStderr: false
+
+  - task: CmdLine@2
+    displayName: "Apply patches"
+    inputs:
+      script: |
+        git apply $(Build.SourcesDirectory)\Patches\Patch001.patch
+        git apply $(Build.SourcesDirectory)\Patches\Patch002.patch
+      workingDirectory: $(Agent.BuildDirectory)\Source
+      failOnStderr: true
+
+  - task: CmdLine@2
+    displayName: "CMake generate solution"
+    inputs:
+      script: |
+        cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
+      workingDirectory: $(Agent.BuildDirectory)
+      failOnStderr: true
+
+  - task: MSBuild@1
+    inputs:
+      solution: '$(Agent.BuildDirectory)\Build\GameNetworkingSockets.sln' 
+      platform: x64
+      configuration: Release
+
+  - task: CmdLine@2
+    displayName: "Run connection tests"
+    inputs:
+      script: |
+        test_connection.exe suite-quick
+      workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
+      failOnStderr: true
+
+  - task: CmdLine@2
+    displayName: "Run cryptography tests"
+    inputs:
+      script: |
+        test_crypto.exe
+      workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
+      # TODO: This test fails without printing any errors.
+      failOnStderr: false

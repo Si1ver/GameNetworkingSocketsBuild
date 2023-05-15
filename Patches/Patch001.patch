@@ -1,0 +1,25 @@
+From bce7637b7ec1ccbae5b4159aa9bed72b329b7c62 Mon Sep 17 00:00:00 2001
+From: Anton Vasiliev <si1ver1502@gmail.com>
+Date: Sat, 3 Dec 2022 03:54:26 +0400
+Subject: [PATCH] PATCH: Remove OpenSSL from dependencies.
+
+---
+ vcpkg.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vcpkg.json b/vcpkg.json
+index 65bf6f6..698b850 100644
+--- a/vcpkg.json
++++ b/vcpkg.json
+@@ -4,7 +4,7 @@
+ 	"version-string": "1.4.0",
+ 	"description": "A basic transport layer for games.",
+ 	"homepage": "https://github.com/ValveSoftware/GameNetworkingSockets",
+-	"dependencies": [ "protobuf", "openssl" ],
++	"dependencies": [ "protobuf" ],
+ 	"default-features": [ "openssl" ],
+ 	"features": {
+ 		"openssl": {
+-- 
+2.38.1.windows.1
+
