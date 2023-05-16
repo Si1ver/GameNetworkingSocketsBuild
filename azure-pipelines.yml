@@ -3,10 +3,35 @@ trigger:
     include:
     - main
 
+variables:
+  GNS_REPOSITORY_URL: https://github.com/ValveSoftware/GameNetworkingSockets.git
+
 jobs:
-- job: build_windows_x64_static_libsodium
+- job: build_windows
   pool:
     vmImage: 'windows-2022'
+
+  strategy:
+    matrix:
+      x64_Static_openssl:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
+        CMAKE_PLATFORM: x64
+        MSBUILD_PLATFORM: x64
+      x64_Static_libsodium:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
+        CMAKE_PLATFORM: x64
+        MSBUILD_PLATFORM: x64
+      x86_Static_openssl:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
+        CMAKE_PLATFORM: win32
+        MSBUILD_PLATFORM: win32
+      x86_Static_libsodium:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
+        CMAKE_PLATFORM: win32
+        MSBUILD_PLATFORM: win32
+
+  variables:
+    CMAKE_GENERATOR: Visual Studio 17 2022
 
   steps:
   - task: CmdLine@2
@@ -23,7 +48,7 @@ jobs:
     inputs:
       script: |
         git init
-        git remote add origin https://github.com/ValveSoftware/GameNetworkingSockets.git
+        git remote add origin $(GNS_REPOSITORY_URL)
         git fetch --depth 1 origin e0d33386903202d9af61e76d69c54e46ece2f457
         git config --local advice.detachedHead false
         git checkout FETCH_HEAD
@@ -44,14 +69,14 @@ jobs:
     displayName: "CMake generate solution"
     inputs:
       script: |
-        cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
+        cmake -G "$(CMAKE_GENERATOR)" -A $(CMAKE_PLATFORM) -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON $(CMAKE_ADDITIONAL_PARAMETERS)
       workingDirectory: $(Agent.BuildDirectory)
       failOnStderr: true
 
   - task: MSBuild@1
     inputs:
       solution: '$(Agent.BuildDirectory)\Build\GameNetworkingSockets.sln' 
-      platform: x64
+      platform: $(MSBUILD_PLATFORM)
       configuration: Release
 
   - task: CmdLine@2
@@ -66,7 +91,7 @@ jobs:
     displayName: "Run cryptography tests"
     inputs:
       script: |
+        rem TODO: This test fails without printing any errors.
         test_crypto.exe
       workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
-      # TODO: This test fails without printing any errors.
-      failOnStderr: false
+      failOnStderr: true
