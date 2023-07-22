@@ -50,9 +50,9 @@ jobs:
     displayName: "Brew install dependencies"
     inputs:
       script: |
-        brew install openssl@1.1
-        brew link --force openssl@1.1
-        brew install protobuf@21
+        brew update
+        brew list openssl@1.1 || brew install openssl@1.1
+        brew list protobuf@21 || brew install protobuf@21
         brew link --force protobuf@21
       workingDirectory: $(Agent.BuildDirectory)
       failOnStderr: true
