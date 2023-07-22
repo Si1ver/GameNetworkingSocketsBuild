@@ -70,4 +70,6 @@ jobs:
     inputs:
       actions: build
       configuration: Release
-      xcWorkspacePath: 
+      xcWorkspacePath: "$(Agent.BuildDirectory)/Build/GameNetworkingSockets.xcodeproj/project.xcworkspace"
+      scheme: "ALL_BUILD"
+      SDK: "macosx13.1"
