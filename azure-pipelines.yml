@@ -34,16 +34,16 @@ jobs:
         git config --local advice.detachedHead false
         git checkout FETCH_HEAD
         git submodule update --init --depth 1
-      workingDirectory: $(Agent.BuildDirectory)\Source
+      workingDirectory: $(Agent.BuildDirectory)/Source
       failOnStderr: false
 
   - task: CmdLine@2
     displayName: "Apply patches"
     inputs:
       script: |
-        git apply $(Build.SourcesDirectory)\Patches\Patch001.patch
-        git apply $(Build.SourcesDirectory)\Patches\Patch002.patch
-      workingDirectory: $(Agent.BuildDirectory)\Source
+        git apply $(Build.SourcesDirectory)/Patches/Patch001.patch
+        git apply $(Build.SourcesDirectory)/Patches/Patch002.patch
+      workingDirectory: $(Agent.BuildDirectory)/Source
       failOnStderr: true
 
   - task: CmdLine@2
