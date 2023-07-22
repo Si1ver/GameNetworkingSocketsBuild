@@ -1,41 +1,18 @@
 trigger:
   branches:
     include:
-    - main
+    - macos
 
 variables:
   GNS_REPOSITORY_URL: https://github.com/ValveSoftware/GameNetworkingSockets.git
 
 jobs:
-- job: build_windows
+- job: build_macos
   pool:
-    vmImage: 'windows-2022'
-
-  strategy:
-    matrix:
-      x64_Static_openssl:
-        matrixName: x64_Static_openssl
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
-        CMAKE_PLATFORM: x64
-        MSBUILD_PLATFORM: x64
-      x64_Static_libsodium:
-        matrixName: x64_Static_libsodium
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
-        CMAKE_PLATFORM: x64
-        MSBUILD_PLATFORM: x64
-      x86_Static_openssl:
-        matrixName: x86_Static_openssl
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
-        CMAKE_PLATFORM: win32
-        MSBUILD_PLATFORM: win32
-      x86_Static_libsodium:
-        matrixName: x86_Static_libsodium
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
-        CMAKE_PLATFORM: win32
-        MSBUILD_PLATFORM: win32
+    vmImage: 'macOS-13'
 
   variables:
-    CMAKE_GENERATOR: Visual Studio 17 2022
+    CMAKE_GENERATOR: Xcode
 
   steps:
   - task: CmdLine@2
@@ -70,36 +47,26 @@ jobs:
       failOnStderr: true
 
   - task: CmdLine@2
-    displayName: "CMake generate solution"
+    displayName: "Brew install dependencies"
     inputs:
       script: |
-        cmake -G "$(CMAKE_GENERATOR)" -A $(CMAKE_PLATFORM) -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON $(CMAKE_ADDITIONAL_PARAMETERS)
+        brew install openssl@1.1
+        brew link --force openssl@1.1
+        brew install protobuf@21
+        brew link --force protobuf@21
       workingDirectory: $(Agent.BuildDirectory)
       failOnStderr: true
 
-  - task: MSBuild@1
+  - task: CmdLine@2
+    displayName: "CMake generate solution"
     inputs:
-      solution: '$(Agent.BuildDirectory)\Build\GameNetworkingSockets.sln' 
-      platform: $(MSBUILD_PLATFORM)
+      script: |
+        cmake -G "$(CMAKE_GENERATOR)" -T buildsystem=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -B Build -S Source
+      workingDirectory: $(Agent.BuildDirectory)
+      failOnStderr: true
+
+  - task: Xcode@5
+    inputs:
+      actions: build
       configuration: Release
-
-  - task: CmdLine@2
-    displayName: "Run connection tests"
-    inputs:
-      script: |
-        test_connection.exe suite-quick
-      workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
-      failOnStderr: true
-
-  - task: CmdLine@2
-    displayName: "Run cryptography tests"
-    inputs:
-      script: |
-        Release\test_crypto.exe
-      workingDirectory: $(Agent.BuildDirectory)\Build\bin
-      failOnStderr: true
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Agent.BuildDirectory)\Build\bin\Release'
-      artifactName: $(matrixName)
+      xcWorkspacePath: 
