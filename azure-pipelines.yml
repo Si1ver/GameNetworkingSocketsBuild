@@ -55,7 +55,7 @@ jobs:
         brew list protobuf@21 || brew install protobuf@21
         brew link --force protobuf@21
       workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: true
+      failOnStderr: false
 
   - task: CmdLine@2
     displayName: "CMake generate solution"
