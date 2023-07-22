@@ -34,34 +34,35 @@ jobs:
         git config --local advice.detachedHead false
         git checkout FETCH_HEAD
         git submodule update --init --depth 1
-      workingDirectory: $(Agent.BuildDirectory)\Source
+      workingDirectory: $(Agent.BuildDirectory)/Source
       failOnStderr: false
 
   - task: CmdLine@2
     displayName: "Apply patches"
     inputs:
       script: |
-        git apply $(Build.SourcesDirectory)\Patches\Patch001.patch
-        git apply $(Build.SourcesDirectory)\Patches\Patch002.patch
-      workingDirectory: $(Agent.BuildDirectory)\Source
+        git apply $(Build.SourcesDirectory)/Patches/Patch001.patch
+        git apply $(Build.SourcesDirectory)/Patches/Patch002.patch
+      workingDirectory: $(Agent.BuildDirectory)/Source
       failOnStderr: true
 
   - task: CmdLine@2
     displayName: "Brew install dependencies"
     inputs:
       script: |
-        brew install openssl@1.1
+        brew update
+        brew reinstall openssl@1.1
         brew link --force openssl@1.1
-        brew install protobuf@21
+        brew list protobuf@21 || brew install protobuf@21
         brew link --force protobuf@21
       workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: true
+      failOnStderr: false
 
   - task: CmdLine@2
     displayName: "CMake generate solution"
     inputs:
       script: |
-        cmake -G "$(CMAKE_GENERATOR)" -T buildsystem=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -B Build -S Source
+        cmake -G "$(CMAKE_GENERATOR)" -T buildsystem=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_OSX_ARCHITECTURES="x86_64" -B Build -S Source
       workingDirectory: $(Agent.BuildDirectory)
       failOnStderr: true
 
@@ -69,4 +70,6 @@ jobs:
     inputs:
       actions: build
       configuration: Release
-      xcWorkspacePath: 
+      xcWorkspacePath: "$(Agent.BuildDirectory)/Build/GameNetworkingSockets.xcodeproj/project.xcworkspace"
+      scheme: "ALL_BUILD"
+      SDK: "macosx13.1"
