@@ -62,7 +62,7 @@ jobs:
     displayName: "CMake generate solution"
     inputs:
       script: |
-        cmake -G "$(CMAKE_GENERATOR)" -T buildsystem=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -B Build -S Source
+        cmake -G "$(CMAKE_GENERATOR)" -T buildsystem=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_OSX_ARCHITECTURES="x86_64" -B Build -S Source
       workingDirectory: $(Agent.BuildDirectory)
       failOnStderr: true
 
