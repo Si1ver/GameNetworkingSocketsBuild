@@ -17,18 +17,18 @@ jobs:
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
-      # x64_Static_libsodium:
-      #   CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
-      #   CMAKE_PLATFORM: x64
-      #   MSBUILD_PLATFORM: x64
-      # x86_Static_openssl:
-      #   CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
-      #   CMAKE_PLATFORM: win32
-      #   MSBUILD_PLATFORM: win32
-      # x86_Static_libsodium:
-      #   CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
-      #   CMAKE_PLATFORM: win32
-      #   MSBUILD_PLATFORM: win32
+      x64_Static_libsodium:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
+        CMAKE_PLATFORM: x64
+        MSBUILD_PLATFORM: x64
+      x86_Static_openssl:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
+        CMAKE_PLATFORM: win32
+        MSBUILD_PLATFORM: win32
+      x86_Static_libsodium:
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
+        CMAKE_PLATFORM: win32
+        MSBUILD_PLATFORM: win32
 
   variables:
     CMAKE_GENERATOR: Visual Studio 17 2022
@@ -79,19 +79,18 @@ jobs:
       platform: $(MSBUILD_PLATFORM)
       configuration: Release
 
-  # - task: CmdLine@2
-  #   displayName: "Run connection tests"
-  #   inputs:
-  #     script: |
-  #       test_connection.exe suite-quick
-  #     workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
-  #     failOnStderr: true
+  - task: CmdLine@2
+    displayName: "Run connection tests"
+    inputs:
+      script: |
+        test_connection.exe suite-quick
+      workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
+      failOnStderr: true
 
   - task: CmdLine@2
     displayName: "Run cryptography tests"
     inputs:
       script: |
-        dir /s
         Release\test_crypto.exe
       workingDirectory: $(Agent.BuildDirectory)\Build\bin
       failOnStderr: true
