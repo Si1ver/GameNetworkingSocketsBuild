@@ -91,6 +91,7 @@ jobs:
     displayName: "Run cryptography tests"
     inputs:
       script: |
+        dir /s
         test_crypto.exe
       workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
       failOnStderr: true
