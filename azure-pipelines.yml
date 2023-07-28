@@ -4,7 +4,7 @@ trigger:
     - main
 
 variables:
-  GNS_REPOSITORY_URL: https://github.com/ValveSoftware/GameNetworkingSockets.git
+  GNS_REPOSITORY_URL: https://github.com/angelskieglazki/GameNetworkingSockets.git
 
 jobs:
 - job: build_windows
@@ -49,7 +49,7 @@ jobs:
       script: |
         git init
         git remote add origin $(GNS_REPOSITORY_URL)
-        git fetch --depth 1 origin e0d33386903202d9af61e76d69c54e46ece2f457
+        git fetch --depth 1 origin 93f7d7eaa6d5cd2b585dc65d8abf3f2518d08321
         git config --local advice.detachedHead false
         git checkout FETCH_HEAD
         git submodule update --init --depth 1
