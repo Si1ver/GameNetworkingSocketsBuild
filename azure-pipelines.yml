@@ -14,10 +14,12 @@ jobs:
   strategy:
     matrix:
       x64_Static_openssl:
+        matrixName: x64_Static_openssl
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x64_Static_libsodium:
+        matrixName: x64_Static_libsodium
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
@@ -98,4 +100,4 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Agent.BuildDirectory)\Build\bin\Release'
-      artifactName: gns-lib
+      artifactName: $(matrixName)
