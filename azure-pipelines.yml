@@ -14,18 +14,22 @@ jobs:
   strategy:
     matrix:
       x64_Static_openssl:
+        matrixName: x64_Static_openssl
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x64_Static_libsodium:
+        matrixName: x64_Static_libsodium
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x86_Static_openssl:
+        matrixName: x86_Static_openssl
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
         CMAKE_PLATFORM: win32
         MSBUILD_PLATFORM: win32
       x86_Static_libsodium:
+        matrixName: x86_Static_libsodium
         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON
         CMAKE_PLATFORM: win32
         MSBUILD_PLATFORM: win32
@@ -91,7 +95,11 @@ jobs:
     displayName: "Run cryptography tests"
     inputs:
       script: |
-        rem TODO: This test fails without printing any errors.
-        test_crypto.exe
-      workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
+        Release\test_crypto.exe
+      workingDirectory: $(Agent.BuildDirectory)\Build\bin
       failOnStderr: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Agent.BuildDirectory)\Build\bin\Release'
+      artifactName: $(matrixName)
