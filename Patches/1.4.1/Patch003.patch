@@ -1,0 +1,90 @@
+From c5ef52b7b98b3af84f1ca90ca8431b770aa57daf Mon Sep 17 00:00:00 2001
+From: DmitryChernikov <47978345+chernikovdmitry@users.noreply.github.com>
+Date: Mon, 29 Apr 2024 18:53:35 +0400
+Subject: [PATCH] BACKEND-200: Allow retransmit packets on ratelimit.
+
+---
+ include/steam/isteamnetworkingsockets.h       |  5 +++++
+ .../clientlib/csteamnetworkingsockets.cpp     | 22 +++++++++++++++++++
+ .../clientlib/steamnetworkingsockets_snp.cpp  |  3 ++-
+ tests/test_connection.cpp                     |  1 +
+ 4 files changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/include/steam/isteamnetworkingsockets.h b/include/steam/isteamnetworkingsockets.h
+index 8c8eeef..562a869 100644
+--- a/include/steam/isteamnetworkingsockets.h
++++ b/include/steam/isteamnetworkingsockets.h
+@@ -299,6 +299,11 @@ public:
+ 	/// -k_EResultInvalidState if the connection was in an invalid state.
+ 	/// See ISteamNetworkingSockets::SendMessageToConnection for possible
+ 	/// failure codes.
++	/// NOTE: @LowKick
++	/// Fixed, don't skip any messages.
++	/// if it get k_EResultLimitExceeded for some message it will stop sending to this overloaded
++	/// connection and mark all subsequent messages to this connection as k_EResultLimitExceeded
++	/// allowing caller to retransmit it later
+ 	virtual void SendMessages( int nMessages, SteamNetworkingMessage_t *const *pMessages, int64 *pOutMessageNumberOrResult ) = 0;
+ 
+ 	/// Flush any messages waiting on the Nagle timer and send them
+diff --git a/src/steamnetworkingsockets/clientlib/csteamnetworkingsockets.cpp b/src/steamnetworkingsockets/clientlib/csteamnetworkingsockets.cpp
+index eff3409..a91b734 100644
+--- a/src/steamnetworkingsockets/clientlib/csteamnetworkingsockets.cpp
++++ b/src/steamnetworkingsockets/clientlib/csteamnetworkingsockets.cpp
+@@ -1333,6 +1333,28 @@ void CSteamNetworkingSockets::SendMessages( int nMessages, SteamNetworkingMessag
+ 		// Return result for this message if they asked for it
+ 		if ( pOutMessageNumberOrResult )
+ 			pOutMessageNumberOrResult[pSort->m_idx] = result;
++
++		// Have too many pending bytes on this connection
++		if ( result == -k_EResultLimitExceeded )
++		{
++			// If caller wants to know - mark all next messages as k_EResultLimitExceeded so caller could
++			// attempt to resend them later
++			if ( pOutMessageNumberOrResult ) {
++				++pSort; // Already done
++				for ( ; pSort < pSortEnd ; ++pSort )
++				{
++					if ( pSort->m_hConn != hConn )
++						break;
++
++					pOutMessageNumberOrResult[pSort->m_idx] = -k_EResultLimitExceeded;
++				}
++			}
++			else
++			{
++				// Caller doesn't care - just skip this one
++				pMsg->Release();
++			}
++		}
+ 	}
+ 
+ 	// Flush out last connection, if any
+diff --git a/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_snp.cpp b/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_snp.cpp
+index dbf8655..ea52f80 100644
+--- a/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_snp.cpp
++++ b/src/steamnetworkingsockets/clientlib/steamnetworkingsockets_snp.cpp
+@@ -317,7 +317,8 @@ int64 CSteamNetworkConnectionBase::SNP_SendMessage( CSteamNetworkingMessage *pSe
+ 	if ( m_senderState.PendingBytesTotal() + cbData > m_connectionConfig.m_SendBufferSize.Get() )
+ 	{
+ 		SpewWarningRateLimited( usecNow, "Connection already has %u bytes pending, cannot queue any more messages\n", m_senderState.PendingBytesTotal() );
+-		pSendMessage->Release();
++		// NOTE: @LowKick: we should keep the message around, but not send it, so caller can retry later
++		// pSendMessage->Release();
+ 		return -k_EResultLimitExceeded;
+ 	}
+ 
+diff --git a/tests/test_connection.cpp b/tests/test_connection.cpp
+index a2ca764..b886b70 100644
+--- a/tests/test_connection.cpp
++++ b/tests/test_connection.cpp
+@@ -1103,6 +1103,7 @@ void Test_netloopback_throughput()
+ 					SteamNetworkingSockets()->SendMessages( 1, &pSendMsg, &nMsgNumberOrResult );
+ 					if ( nMsgNumberOrResult == -k_EResultLimitExceeded )
+ 					{
++						pSendMsg->Release();
+ 						TEST_Printf( "SendMessage returned limit exceeded trying to queue %d + %d = %d\n", serverStatus.m_cbPendingReliable, cbSendMsg, serverStatus.m_cbPendingReliable + cbSendMsg );
+ 						break;
+ 					}
+-- 
+2.45.0.windows.1
+

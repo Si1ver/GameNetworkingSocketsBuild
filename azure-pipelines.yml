@@ -5,6 +5,8 @@ trigger:
 
 variables:
   GNS_REPOSITORY_URL: https://github.com/ValveSoftware/GameNetworkingSockets.git
+  GNS_PATCH_SET: 1.4.1
+  GNS_COMMIT_HASH: 1e724c3248eefd0f49003ce2843140495e2cb475
 
 jobs:
 - job: build_windows
@@ -53,7 +55,7 @@ jobs:
       script: |
         git init
         git remote add origin $(GNS_REPOSITORY_URL)
-        git fetch --depth 1 origin e0d33386903202d9af61e76d69c54e46ece2f457
+        git fetch --depth 1 origin $(GNS_COMMIT_HASH)
         git config --local advice.detachedHead false
         git checkout FETCH_HEAD
         git submodule update --init --depth 1
@@ -64,8 +66,9 @@ jobs:
     displayName: "Apply patches"
     inputs:
       script: |
-        git apply $(Build.SourcesDirectory)\Patches\Patch001.patch
-        git apply $(Build.SourcesDirectory)\Patches\Patch002.patch
+        git apply $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch001.patch
+        git apply $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch002.patch
+        git apply $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch003.patch
       workingDirectory: $(Agent.BuildDirectory)\Source
       failOnStderr: true
 
@@ -100,6 +103,7 @@ jobs:
       failOnStderr: true
 
   - task: PublishBuildArtifacts@1
+    displayName: "Publish artifacts"
     inputs:
       pathToPublish: '$(Agent.BuildDirectory)\Build\bin\Release'
       artifactName: $(matrixName)
