@@ -17,42 +17,42 @@ jobs:
     matrix:
       x64_openssl_dynamic_deps:
         matrixName: x64_openssl_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_TARGET_TRIPLET=x64-windows-release
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-release
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x64_libsodium_dynamic_deps:
         matrixName: x64_libsodium_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_TARGET_TRIPLET=x64-windows-release
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-release
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x86_openssl_dynamic_deps:
         matrixName: x86_openssl_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_TARGET_TRIPLET=x86-windows-release
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-release
         CMAKE_PLATFORM: win32
         MSBUILD_PLATFORM: win32
       x86_libsodium_dynamic_deps:
         matrixName: x86_libsodium_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_TARGET_TRIPLET=x86-windows-release
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-release
         CMAKE_PLATFORM: win32
         MSBUILD_PLATFORM: win32
       x64_openssl_static_deps:
         matrixName: x64_openssl_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_TARGET_TRIPLET=x64-windows-static-md-release -DProtobuf_USE_STATIC_LIBS=ON
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-static-deps-md-release -DProtobuf_USE_STATIC_LIBS=ON
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x64_libsodium_static_deps:
         matrixName: x64_libsodium_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_TARGET_TRIPLET=x64-windows-static-md-release -DProtobuf_USE_STATIC_LIBS=ON
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-static-deps-md-release -DProtobuf_USE_STATIC_LIBS=ON
         CMAKE_PLATFORM: x64
         MSBUILD_PLATFORM: x64
       x86_openssl_static_deps:
         matrixName: x86_openssl_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_TARGET_TRIPLET=x86-windows-static-md-release -DProtobuf_USE_STATIC_LIBS=ON
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-static-deps-md-release -DProtobuf_USE_STATIC_LIBS=ON
         CMAKE_PLATFORM: win32
         MSBUILD_PLATFORM: win32
       x86_libsodium_static_deps:
         matrixName: x86_libsodium_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_TARGET_TRIPLET=x86-windows-static-md-release -DProtobuf_USE_STATIC_LIBS=ON
+        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-static-deps-md-release -DProtobuf_USE_STATIC_LIBS=ON
         CMAKE_PLATFORM: win32
         MSBUILD_PLATFORM: win32
 
@@ -89,6 +89,7 @@ jobs:
         git apply $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch001.patch
         git apply $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch002.patch
         git apply $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch003.patch
+        git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch004.patch
       workingDirectory: $(Agent.BuildDirectory)\Source
       failOnStderr: true
 

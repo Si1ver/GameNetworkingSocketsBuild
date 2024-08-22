@@ -1,0 +1,59 @@
+From e2dc096dc5543c9f46cc0fcb0e05041399167b4d Mon Sep 17 00:00:00 2001
+From: Anton Vasiliev <si1ver1502@gmail.com>
+Date: Fri, 23 Aug 2024 01:38:52 +0300
+Subject: [PATCH] Add custom triplets.
+
+---
+ triplets/x64-windows-release.cmake                | 4 ++++
+ triplets/x64-windows-static-deps-md-release.cmake | 4 ++++
+ triplets/x86-windows-release.cmake                | 4 ++++
+ triplets/x86-windows-static-deps-md-release.cmake | 4 ++++
+ 4 files changed, 16 insertions(+)
+ create mode 100644 triplets/x64-windows-release.cmake
+ create mode 100644 triplets/x64-windows-static-deps-md-release.cmake
+ create mode 100644 triplets/x86-windows-release.cmake
+ create mode 100644 triplets/x86-windows-static-deps-md-release.cmake
+
+diff --git a/triplets/x64-windows-release.cmake b/triplets/x64-windows-release.cmake
+new file mode 100644
+index 0000000..f6c4025
+--- /dev/null
++++ b/triplets/x64-windows-release.cmake
+@@ -0,0 +1,4 @@
++set(VCPKG_TARGET_ARCHITECTURE x64)
++set(VCPKG_CRT_LINKAGE dynamic)
++set(VCPKG_LIBRARY_LINKAGE dynamic)
++set(VCPKG_BUILD_TYPE release)
+diff --git a/triplets/x64-windows-static-deps-md-release.cmake b/triplets/x64-windows-static-deps-md-release.cmake
+new file mode 100644
+index 0000000..08cc245
+--- /dev/null
++++ b/triplets/x64-windows-static-deps-md-release.cmake
+@@ -0,0 +1,4 @@
++set(VCPKG_TARGET_ARCHITECTURE x64)
++set(VCPKG_CRT_LINKAGE dynamic)
++set(VCPKG_LIBRARY_LINKAGE static)
++set(VCPKG_BUILD_TYPE release)
+diff --git a/triplets/x86-windows-release.cmake b/triplets/x86-windows-release.cmake
+new file mode 100644
+index 0000000..0a277bd
+--- /dev/null
++++ b/triplets/x86-windows-release.cmake
+@@ -0,0 +1,4 @@
++set(VCPKG_TARGET_ARCHITECTURE x86)
++set(VCPKG_CRT_LINKAGE dynamic)
++set(VCPKG_LIBRARY_LINKAGE dynamic)
++set(VCPKG_BUILD_TYPE release)
+diff --git a/triplets/x86-windows-static-deps-md-release.cmake b/triplets/x86-windows-static-deps-md-release.cmake
+new file mode 100644
+index 0000000..a144577
+--- /dev/null
++++ b/triplets/x86-windows-static-deps-md-release.cmake
+@@ -0,0 +1,4 @@
++set(VCPKG_TARGET_ARCHITECTURE x86)
++set(VCPKG_CRT_LINKAGE dynamic)
++set(VCPKG_LIBRARY_LINKAGE static)
++set(VCPKG_BUILD_TYPE release)
+-- 
+2.43.0.windows.1
+
