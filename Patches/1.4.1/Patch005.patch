@@ -1,0 +1,22 @@
+From 4331d31d113a75bbb8019d46577a1268966acb88 Mon Sep 17 00:00:00 2001
+From: Anton Vasiliev <si1ver1502@gmail.com>
+Date: Sat, 8 Mar 2025 14:35:36 +0400
+Subject: [PATCH] Update minimum required CMake version.
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 90899a4..7e025f2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.9)
++cmake_minimum_required(VERSION 3.10)
+ 
+ # If vcpkg present as submodule, bring in the toolchain
+ if( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake )
+-- 
+2.48.1.windows.1
+
