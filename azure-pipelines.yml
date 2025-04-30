@@ -1,250 +1,250 @@
-trigger:
-  branches:
-    include:
-    - main
+# trigger:
+#   branches:
+#     include:
+#     - main
 
-variables:
-  GNS_REPOSITORY_URL: https://github.com/ValveSoftware/GameNetworkingSockets.git
-  GNS_PATCH_SET: 1.4.1
-  GNS_COMMIT_HASH: 1e724c3248eefd0f49003ce2843140495e2cb475
+# variables:
+#   GNS_REPOSITORY_URL: https://github.com/ValveSoftware/GameNetworkingSockets.git
+#   GNS_PATCH_SET: 1.4.1
+#   GNS_COMMIT_HASH: 1e724c3248eefd0f49003ce2843140495e2cb475
 
-jobs:
-- job: build_windows
-  pool:
-    vmImage: 'windows-2022'
+# jobs:
+# - job: build_windows
+#   pool:
+#     vmImage: 'windows-2022'
 
-  strategy:
-    matrix:
-      x64_openssl_dynamic_deps:
-        matrixName: x64_openssl_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
-        CMAKE_PLATFORM: x64
-        MSBUILD_PLATFORM: x64
+#   strategy:
+#     matrix:
+#       x64_openssl_dynamic_deps:
+#         matrixName: x64_openssl_dynamic_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
+#         CMAKE_PLATFORM: x64
+#         MSBUILD_PLATFORM: x64
 
-      x64_libsodium_dynamic_deps:
-        matrixName: x64_libsodium_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
-        CMAKE_PLATFORM: x64
-        MSBUILD_PLATFORM: x64
+#       x64_libsodium_dynamic_deps:
+#         matrixName: x64_libsodium_dynamic_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
+#         CMAKE_PLATFORM: x64
+#         MSBUILD_PLATFORM: x64
 
-      x86_openssl_dynamic_deps:
-        matrixName: x86_openssl_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
-        CMAKE_PLATFORM: win32
-        MSBUILD_PLATFORM: win32
+#       x86_openssl_dynamic_deps:
+#         matrixName: x86_openssl_dynamic_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
+#         CMAKE_PLATFORM: win32
+#         MSBUILD_PLATFORM: win32
 
-      x86_libsodium_dynamic_deps:
-        matrixName: x86_libsodium_dynamic_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
-        CMAKE_PLATFORM: win32
-        MSBUILD_PLATFORM: win32
+#       x86_libsodium_dynamic_deps:
+#         matrixName: x86_libsodium_dynamic_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-release -DVCPKG_HOST_TRIPLET=x64-windows-release
+#         CMAKE_PLATFORM: win32
+#         MSBUILD_PLATFORM: win32
 
-      x64_openssl_static_deps:
-        matrixName: x64_openssl_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
-        CMAKE_PLATFORM: x64
-        MSBUILD_PLATFORM: x64
+#       x64_openssl_static_deps:
+#         matrixName: x64_openssl_static_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
+#         CMAKE_PLATFORM: x64
+#         MSBUILD_PLATFORM: x64
 
-      x64_libsodium_static_deps:
-        matrixName: x64_libsodium_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
-        CMAKE_PLATFORM: x64
-        MSBUILD_PLATFORM: x64
+#       x64_libsodium_static_deps:
+#         matrixName: x64_libsodium_static_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x64-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
+#         CMAKE_PLATFORM: x64
+#         MSBUILD_PLATFORM: x64
 
-      x86_openssl_static_deps:
-        matrixName: x86_openssl_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
-        CMAKE_PLATFORM: win32
-        MSBUILD_PLATFORM: win32
+#       x86_openssl_static_deps:
+#         matrixName: x86_openssl_static_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
+#         CMAKE_PLATFORM: win32
+#         MSBUILD_PLATFORM: win32
 
-      x86_libsodium_static_deps:
-        matrixName: x86_libsodium_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
-        CMAKE_PLATFORM: win32
-        MSBUILD_PLATFORM: win32
+#       x86_libsodium_static_deps:
+#         matrixName: x86_libsodium_static_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=libsodium -DVCPKG_MANIFEST_FEATURES=libsodium -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=ON -DVCPKG_OVERLAY_TRIPLETS=$(Agent.BuildDirectory)\Source\triplets -DVCPKG_TARGET_TRIPLET=x86-windows-static-deps-md-release -DVCPKG_HOST_TRIPLET=x64-windows-release -DProtobuf_USE_STATIC_LIBS=ON
+#         CMAKE_PLATFORM: win32
+#         MSBUILD_PLATFORM: win32
 
-  variables:
-    CMAKE_GENERATOR: Visual Studio 17 2022
+#   variables:
+#     CMAKE_GENERATOR: Visual Studio 17 2022
 
-  steps:
-  - task: CmdLine@2
-    displayName: "Create directory structure"
-    inputs:
-      script: |
-        mkdir Source
-        mkdir Build
-      workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: true
+#   steps:
+#   - task: CmdLine@2
+#     displayName: "Create directory structure"
+#     inputs:
+#       script: |
+#         mkdir Source
+#         mkdir Build
+#       workingDirectory: $(Agent.BuildDirectory)
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "Shallow clone GNS"
-    inputs:
-      script: |
-        git config --global init.defaultBranch main
-        git init
-        git remote add origin $(GNS_REPOSITORY_URL)
-        git fetch --depth 1 origin $(GNS_COMMIT_HASH)
-        git config --local advice.detachedHead false
-        git checkout FETCH_HEAD
-        git submodule update --init --depth 1
-      workingDirectory: $(Agent.BuildDirectory)\Source
-      failOnStderr: false
+#   - task: CmdLine@2
+#     displayName: "Shallow clone GNS"
+#     inputs:
+#       script: |
+#         git config --global init.defaultBranch main
+#         git init
+#         git remote add origin $(GNS_REPOSITORY_URL)
+#         git fetch --depth 1 origin $(GNS_COMMIT_HASH)
+#         git config --local advice.detachedHead false
+#         git checkout FETCH_HEAD
+#         git submodule update --init --depth 1
+#       workingDirectory: $(Agent.BuildDirectory)\Source
+#       failOnStderr: false
 
-  - task: CmdLine@2
-    displayName: "Apply patches"
-    inputs:
-      script: |
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch001.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch002.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch003.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch004.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch005.patch
-      workingDirectory: $(Agent.BuildDirectory)\Source
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Apply patches"
+#     inputs:
+#       script: |
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch001.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch002.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch003.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch004.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)\Patches\$(GNS_PATCH_SET)\Patch005.patch
+#       workingDirectory: $(Agent.BuildDirectory)\Source
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "CMake generate solution"
-    inputs:
-      script: |
-        cmake -G "$(CMAKE_GENERATOR)" -A $(CMAKE_PLATFORM) -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON $(CMAKE_ADDITIONAL_PARAMETERS)
-      workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "CMake generate solution"
+#     inputs:
+#       script: |
+#         cmake -G "$(CMAKE_GENERATOR)" -A $(CMAKE_PLATFORM) -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON $(CMAKE_ADDITIONAL_PARAMETERS)
+#       workingDirectory: $(Agent.BuildDirectory)
+#       failOnStderr: true
 
-  - task: MSBuild@1
-    inputs:
-      solution: '$(Agent.BuildDirectory)\Build\GameNetworkingSockets.sln'
-      platform: $(MSBUILD_PLATFORM)
-      configuration: Release
+#   - task: MSBuild@1
+#     inputs:
+#       solution: '$(Agent.BuildDirectory)\Build\GameNetworkingSockets.sln'
+#       platform: $(MSBUILD_PLATFORM)
+#       configuration: Release
 
-  - task: CmdLine@2
-    displayName: "Run connection tests"
-    inputs:
-      script: |
-        test_connection.exe suite-quick
-      workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Run connection tests"
+#     inputs:
+#       script: |
+#         test_connection.exe suite-quick
+#       workingDirectory: $(Agent.BuildDirectory)\Build\bin\Release
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "Run cryptography tests"
-    inputs:
-      script: |
-        Release\test_crypto.exe
-      workingDirectory: $(Agent.BuildDirectory)\Build\bin
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Run cryptography tests"
+#     inputs:
+#       script: |
+#         Release\test_crypto.exe
+#       workingDirectory: $(Agent.BuildDirectory)\Build\bin
+#       failOnStderr: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: "Publish artifacts"
-    inputs:
-      pathToPublish: '$(Agent.BuildDirectory)\Build\bin\Release'
-      artifactName: $(matrixName)
+#   - task: PublishBuildArtifacts@1
+#     displayName: "Publish artifacts"
+#     inputs:
+#       pathToPublish: '$(Agent.BuildDirectory)\Build\bin\Release'
+#       artifactName: $(matrixName)
 
-- job: build_linux_vcpkg
-  pool:
-    vmImage: 'ubuntu-22.04'
+# - job: build_linux_vcpkg
+#   pool:
+#     vmImage: 'ubuntu-22.04'
 
-  strategy:
-    matrix:
-#      This does NOT produce libGameNetworkingSockets.so with dynamically linked protobuf and openssl.
-#      To link with dependencies dynamically, packages must be provided by the system and not with vckpg.
-#      x64_openssl_dynamic_deps:
-#        matrixName: x64_openssl_dynamic_deps
-#        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
+#   strategy:
+#     matrix:
+# #      This does NOT produce libGameNetworkingSockets.so with dynamically linked protobuf and openssl.
+# #      To link with dependencies dynamically, packages must be provided by the system and not with vckpg.
+# #      x64_openssl_dynamic_deps:
+# #        matrixName: x64_openssl_dynamic_deps
+# #        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL
 
-      x64_openssl_static_deps:
-        matrixName: x64_openssl_static_deps
-        CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DProtobuf_USE_STATIC_LIBS=ON
+#       x64_openssl_static_deps:
+#         matrixName: x64_openssl_static_deps
+#         CMAKE_ADDITIONAL_PARAMETERS: -DUSE_CRYPTO=OpenSSL -DProtobuf_USE_STATIC_LIBS=ON
 
-  variables:
-    CMAKE_GENERATOR: Ninja
+#   variables:
+#     CMAKE_GENERATOR: Ninja
 
-  steps:
-  - task: CmdLine@2
-    displayName: "Install dependencies"
-    inputs:
-      script: |
-        sudo apt update
-        sudo apt upgrade --assume-yes
-        sudo apt install build-essential cmake ninja-build pkg-config --assume-yes
-      workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: false
+#   steps:
+#   - task: CmdLine@2
+#     displayName: "Install dependencies"
+#     inputs:
+#       script: |
+#         sudo apt update
+#         sudo apt upgrade --assume-yes
+#         sudo apt install build-essential cmake ninja-build pkg-config --assume-yes
+#       workingDirectory: $(Agent.BuildDirectory)
+#       failOnStderr: false
 
-  - task: CmdLine@2
-    displayName: "Create directory structure"
-    inputs:
-      script: |
-        mkdir Source
-        mkdir Build
-      workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Create directory structure"
+#     inputs:
+#       script: |
+#         mkdir Source
+#         mkdir Build
+#       workingDirectory: $(Agent.BuildDirectory)
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "Shallow clone GNS"
-    inputs:
-      script: |
-        git config --global init.defaultBranch main
-        git init
-        git remote add origin $(GNS_REPOSITORY_URL)
-        git fetch --depth 1 origin $(GNS_COMMIT_HASH)
-        git config --local advice.detachedHead false
-        git checkout FETCH_HEAD
-        git submodule update --init --depth 1
-      workingDirectory: $(Agent.BuildDirectory)/Source
-      failOnStderr: false
+#   - task: CmdLine@2
+#     displayName: "Shallow clone GNS"
+#     inputs:
+#       script: |
+#         git config --global init.defaultBranch main
+#         git init
+#         git remote add origin $(GNS_REPOSITORY_URL)
+#         git fetch --depth 1 origin $(GNS_COMMIT_HASH)
+#         git config --local advice.detachedHead false
+#         git checkout FETCH_HEAD
+#         git submodule update --init --depth 1
+#       workingDirectory: $(Agent.BuildDirectory)/Source
+#       failOnStderr: false
 
-  - task: CmdLine@2
-    displayName: "Apply patches"
-    inputs:
-      script: |
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch001.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch002.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch003.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch004.patch
-        git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch005.patch
-      workingDirectory: $(Agent.BuildDirectory)/Source
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Apply patches"
+#     inputs:
+#       script: |
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch001.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch002.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch003.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch004.patch
+#         git apply --whitespace=nowarn $(Build.SourcesDirectory)/Patches/$(GNS_PATCH_SET)/Patch005.patch
+#       workingDirectory: $(Agent.BuildDirectory)/Source
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "CMake generate solution"
-    inputs:
-      script: |
-        cmake -G "$(CMAKE_GENERATOR)" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON $(CMAKE_ADDITIONAL_PARAMETERS)
-      workingDirectory: $(Agent.BuildDirectory)
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "CMake generate solution"
+#     inputs:
+#       script: |
+#         cmake -G "$(CMAKE_GENERATOR)" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -B Build -S Source -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_STATIC_LIB=ON -DBUILD_TESTS=ON -DENABLE_ICE=OFF -DLTO=ON $(CMAKE_ADDITIONAL_PARAMETERS)
+#       workingDirectory: $(Agent.BuildDirectory)
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "Build with Ninja"
-    inputs:
-      script: |
-        ninja
-      workingDirectory: $(Agent.BuildDirectory)/Build/
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Build with Ninja"
+#     inputs:
+#       script: |
+#         ninja
+#       workingDirectory: $(Agent.BuildDirectory)/Build/
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "List dependencies"
-    inputs:
-      script: |
-        objdump -p ./libGameNetworkingSockets.so
-      workingDirectory: $(Agent.BuildDirectory)/Build/bin
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "List dependencies"
+#     inputs:
+#       script: |
+#         objdump -p ./libGameNetworkingSockets.so
+#       workingDirectory: $(Agent.BuildDirectory)/Build/bin
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "Run connection tests"
-    inputs:
-      script: |
-        ./test_connection suite-quick
-      workingDirectory: $(Agent.BuildDirectory)/Build/bin
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Run connection tests"
+#     inputs:
+#       script: |
+#         ./test_connection suite-quick
+#       workingDirectory: $(Agent.BuildDirectory)/Build/bin
+#       failOnStderr: true
 
-  - task: CmdLine@2
-    displayName: "Run cryptography tests"
-    inputs:
-      script: |
-        ./test_crypto
-      workingDirectory: $(Agent.BuildDirectory)/Build/bin
-      failOnStderr: true
+#   - task: CmdLine@2
+#     displayName: "Run cryptography tests"
+#     inputs:
+#       script: |
+#         ./test_crypto
+#       workingDirectory: $(Agent.BuildDirectory)/Build/bin
+#       failOnStderr: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: "Publish artifacts"
-    inputs:
-      pathToPublish: '$(Agent.BuildDirectory)/Build/bin'
-      artifactName: $(matrixName)
+#   - task: PublishBuildArtifacts@1
+#     displayName: "Publish artifacts"
+#     inputs:
+#       pathToPublish: '$(Agent.BuildDirectory)/Build/bin'
+#       artifactName: $(matrixName)
