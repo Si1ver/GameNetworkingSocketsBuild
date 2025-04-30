@@ -1,0 +1,34 @@
+From e6f1aaccf6bd1bc3eab7654fc5da457fe09a5584 Mon Sep 17 00:00:00 2001
+From: Anton Vasiliev <si1ver1502@gmail.com>
+Date: Thu, 24 Apr 2025 01:46:13 +0400
+Subject: [PATCH] Make sure that address value is 32 bit.
+
+---
+ src/tier1/netadr.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/tier1/netadr.cpp b/src/tier1/netadr.cpp
+index e4b64d6..1434ad5 100644
+--- a/src/tier1/netadr.cpp
++++ b/src/tier1/netadr.cpp
+@@ -645,7 +645,7 @@ size_t CIPAndPort::ToSockadr(void *addr, size_t addr_size) const
+ 			}
+ 			auto *s = (struct sockaddr_in*)addr;
+ 			s->sin_family = AF_INET;
+-			s->sin_addr.s_addr = BigDWord( INADDR_LOOPBACK );
++			s->sin_addr.s_addr = BigDWord( (uint32)INADDR_LOOPBACK );
+ 			s->sin_port = BigWord( m_usPort );
+ 			struct_size = sizeof(sockaddr_in);
+ 		}
+@@ -660,7 +660,7 @@ size_t CIPAndPort::ToSockadr(void *addr, size_t addr_size) const
+ 			}
+ 			auto *s = (struct sockaddr_in*)addr;
+ 			s->sin_family = AF_INET;
+-			s->sin_addr.s_addr = BigDWord( INADDR_BROADCAST );
++			s->sin_addr.s_addr = BigDWord( (uint32)INADDR_BROADCAST );
+ 			s->sin_port = BigWord( m_usPort );
+ 			struct_size = sizeof(sockaddr_in);
+ 		}
+-- 
+2.34.1
+
