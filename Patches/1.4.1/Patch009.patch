@@ -1,0 +1,81 @@
+From af5eeb673d689d5046294d692fa44ba6893aaba3 Mon Sep 17 00:00:00 2001
+From: Anton Vasiliev <si1ver1502@gmail.com>
+Date: Sat, 3 May 2025 00:53:43 +0400
+Subject: [PATCH] Add CMake presets.
+
+---
+ CMakePresets.json | 62 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 CMakePresets.json
+
+diff --git a/CMakePresets.json b/CMakePresets.json
+new file mode 100644
+index 0000000..ec565fb
+--- /dev/null
++++ b/CMakePresets.json
+@@ -0,0 +1,62 @@
++{
++    "version": 3,
++    "cmakeMinimumRequired": {
++        "major": 3,
++        "minor": 19,
++        "patch": 0
++    },
++    "configurePresets": [
++        {
++            "name": "linux-x64-openssl-release",
++            "displayName": "Release Build for x64 Linux with OpenSSL",
++            "description": "Release build for x64 Linux with OpenSSL and statically linked dependencies using Ninja generator and vcpkg",
++            "generator": "Ninja",
++            "cacheVariables": {
++                "CMAKE_BUILD_TYPE": "Release",
++                "CMAKE_CONFIGURATION_TYPES": "Release",
++                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
++                "VCPKG_TARGET_TRIPLET": "x64-linux",
++                "BUILD_STATIC_LIB": "ON",
++                "BUILD_TESTS": "ON",
++                "ENABLE_ICE": "OFF",
++                "LTO": "ON",
++                "USE_CRYPTO": "OpenSSL",
++                "Protobuf_USE_STATIC_LIBS": "ON"
++            }
++        },
++        {
++            "name": "android-arm64-openssl-release",
++            "displayName": "Release Build for arm64 Android with OpenSSL",
++            "description": "Release Build for arm64 Android with OpenSSL and statically linked dependencies using Ninja generator, Android NDK and vcpkg",
++            "generator": "Ninja",
++            "cacheVariables": {
++                "CMAKE_BUILD_TYPE": "Release",
++                "CMAKE_CONFIGURATION_TYPES": "Release",
++                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
++                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake",
++                "VCPKG_TARGET_TRIPLET": "arm64-android",
++                "ANDROID_ABI": "arm64-v8a",
++                "ANDROID_PLATFORM": "24",
++                "BUILD_STATIC_LIB": "ON",
++                "BUILD_TESTS": "OFF",
++                "ENABLE_ICE": "OFF",
++                "USE_CRYPTO": "OpenSSL",
++                "Protobuf_USE_STATIC_LIBS": "ON"
++            }
++        }
++    ],
++    "buildPresets": [
++        {
++            "name": "linux-x64-openssl-release",
++            "configurePreset": "linux-x64-openssl-release",
++            "description": "Build the Release preset using Ninja",
++            "jobs": 8
++        },
++        {
++            "name": "android-arm64-openssl-release",
++            "configurePreset": "android-arm64-openssl-release",
++            "description": "Build for Android arm64 using Ninja",
++            "jobs": 8
++        }
++    ]
++}
+-- 
+2.49.0.windows.1
+
