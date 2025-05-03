@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check that Source directory exist
+if [[ ! -d "Source" ]]; then
+    echo "Source directory does not exist. Please run GetSourceCode.sh before running this script."
+    exit 1
+fi
+
 cd Source
 
 git apply --whitespace=nowarn ../Patches/1.4.1/Patch001.patch

@@ -1,6 +1,11 @@
 #!/bin/bash
 
-mkdir Build
+# Check that Source directory does not exist
+if [[ -d "Source" ]]; then
+    echo "Source directory already exists. Please remove it before running this script."
+    exit 1
+fi
+
 mkdir Source
 
 cd Source
